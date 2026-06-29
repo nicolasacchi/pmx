@@ -52,12 +52,18 @@ type Client struct {
 // New creates a Postmark API client holding both token scopes. A command picks
 // the scope per request; the matching token is required only for the scopes it
 // actually calls (so a server-token-only setup can still run server commands).
+// POSTMARK_API_BASE_URL overrides the default origin (used by tests pointing at
+// an httptest server, and available for any future regional endpoint).
 func New(serverToken, accountToken string, verbose bool) *Client {
+	base := BaseURL
+	if v := os.Getenv("POSTMARK_API_BASE_URL"); v != "" {
+		base = strings.TrimRight(v, "/")
+	}
 	return &Client{
 		http:         &http.Client{Timeout: Timeout},
 		serverToken:  serverToken,
 		accountToken: accountToken,
-		baseURL:      BaseURL,
+		baseURL:      base,
 		verbose:      verbose,
 		maxRetries:   MaxRetries,
 	}

@@ -32,7 +32,7 @@ Postmark has **two token scopes**. pmx resolves each from **flag → env → con
 | Server | `X-Postmark-Server-Token` | `--server-token` / `POSTMARK_SERVER_TOKEN` | messages, bounces, stats, suppressions, email, templates, streams, server, webhooks, inbound-rules, overview, otp |
 | Account | `X-Postmark-Account-Token` | `--account-token` / `POSTMARK_ACCOUNT_TOKEN` | servers, signatures, domains, data-removals |
 
-> **Tokens ≠ SMTP credentials.** The Rails app sends via Postmark *SMTP*
+> **Tokens ≠ SMTP credentials.** An app may *send* via Postmark SMTP
 > username/password; the API tokens here are separate (Postmark UI → Servers →
 > *API Tokens*, and Account → *API Tokens*).
 

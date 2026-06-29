@@ -110,6 +110,10 @@ func tokenOf(p *Project, kind tokenKind) string {
 	return p.AccountToken
 }
 
+// AddProject creates or updates a project, MERGING token fields: a non-empty
+// token overwrites that scope, an empty one leaves the existing value intact.
+// So `config add prod --account-token X` then `config add prod --server-token Y`
+// yields a project holding both, instead of the second call wiping the first.
 func AddProject(name, serverToken, accountToken string) error {
 	cfg, err := loadConfigFile()
 	if err != nil {
@@ -118,7 +122,17 @@ func AddProject(name, serverToken, accountToken string) error {
 	if cfg.Projects == nil {
 		cfg.Projects = make(map[string]*Project)
 	}
-	cfg.Projects[name] = &Project{ServerToken: serverToken, AccountToken: accountToken}
+	p := cfg.Projects[name]
+	if p == nil {
+		p = &Project{}
+	}
+	if serverToken != "" {
+		p.ServerToken = serverToken
+	}
+	if accountToken != "" {
+		p.AccountToken = accountToken
+	}
+	cfg.Projects[name] = p
 	if cfg.DefaultProject == "" {
 		cfg.DefaultProject = name
 	}

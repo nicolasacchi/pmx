@@ -23,7 +23,7 @@ A command only needs the scope it calls; the client raises a clear auth error
 (exit 2) at request time if the needed token is unset. `pmx config doctor`
 probes both scopes.
 
-> SMTP credentials (used by the Rails app to *send*) are NOT API tokens. Mint
+> SMTP credentials (used by an app to *send*) are NOT API tokens. Mint
 > API tokens in the Postmark UI: Server → API Tokens (server scope), Account →
 > API Tokens (account scope).
 

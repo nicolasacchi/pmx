@@ -36,7 +36,7 @@ NotifyWhenCompleted. Postmark returns a request ID you can poll with
 
 Examples:
   pmx data-removals create --file removal.json --yes
-  echo '{"RequestedBy":"ops@1000farmacie.it","RequestedByEmail":"ops@1000farmacie.it","RecipientEmailAddress":"customer@example.com","NotifyWhenCompleted":true}' | pmx data-removals create --file - --yes
+  echo '{"RequestedBy":"ops@example.com","RequestedByEmail":"ops@example.com","RecipientEmailAddress":"customer@example.com","NotifyWhenCompleted":true}' | pmx data-removals create --file - --yes
   pmx data-removals create --file removal.json --dry-run`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := getClient(cmd)
