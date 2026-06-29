@@ -1,0 +1,36 @@
+// Command pmx is the Postmark Explorer CLI — a fleet sibling of ddx/otx/gx/stx.
+// It gives humans pretty tables and LLMs/Claude Code clean JSON over the full
+// Postmark API: message search & delivery tracing (the OTP lens), bounces,
+// suppressions, stats, templates, plus account-level signature/domain admin.
+package main
+
+import (
+	"errors"
+	"fmt"
+	"os"
+
+	"github.com/nicolasacchi/pmx/internal/client"
+	"github.com/nicolasacchi/pmx/internal/commands"
+	"github.com/nicolasacchi/pmx/internal/output"
+)
+
+// version is overwritten at build time via -ldflags "-X main.version=...".
+var version = "dev"
+
+func main() {
+	commands.SetVersion(version)
+	if err := commands.Execute(); err != nil {
+		var apiErr *client.APIError
+		if errors.As(err, &apiErr) {
+			output.PrintError(apiErr.Error(), apiErr.StatusCode)
+			fmt.Fprintln(os.Stderr, "Error:", apiErr.Error())
+			if apiErr.Hint != "" {
+				fmt.Fprintln(os.Stderr, "Hint:", apiErr.Hint)
+			}
+			os.Exit(apiErr.ExitCode())
+		}
+		output.PrintError(err.Error(), 0)
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(1)
+	}
+}
