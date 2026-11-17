@@ -86,7 +86,7 @@ pmx bounces activate <id> --yes
 pmx bounces tags
 pmx bounces deliverystats
 
-pmx stats outbound|sends|bounces|spam|opens|clicks [--from --to --tag]
+pmx stats outbound|sends|bounces|spam|opens|clicks [--from --to --tag --stream]
 
 pmx suppressions list   --stream outbound
 pmx suppressions create --email x@y.com --stream outbound --yes

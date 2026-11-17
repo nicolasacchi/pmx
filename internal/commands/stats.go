@@ -11,11 +11,15 @@ import (
 // printData("", data). The parent owns a persistent --tag filter; --from/--to
 // are global. Mirrors the messages.go group shape.
 
-var statsTag string
+var (
+	statsTag    string
+	statsStream string
+)
 
 func init() {
 	rootCmd.AddCommand(statsCmd)
 	statsCmd.PersistentFlags().StringVar(&statsTag, "tag", "", "Filter statistics by message tag (e.g. otp)")
+	statsCmd.PersistentFlags().StringVar(&statsStream, "stream", "", "Filter statistics by message stream ID (e.g. otp_codes); default: all streams")
 	statsCmd.AddCommand(
 		statsOutboundCmd,
 		statsSendsCmd,
@@ -30,14 +34,16 @@ var statsCmd = &cobra.Command{
 	Use:   "stats",
 	Short: "Outbound delivery statistics (server scope)",
 	Long: `Outbound delivery statistics for the server, aggregated over a date
-range. Use --from/--to to bound the window and --tag to scope to one message tag.
+range. Use --from/--to to bound the window, --tag to scope to one message tag
+and --stream to scope to one message stream (Postmark "messagestream").
 
 Examples:
   pmx stats outbound --from 24h
-  pmx stats opens --from 7d --tag otp`,
+  pmx stats opens --from 7d --tag otp
+  pmx stats outbound --from 24h --stream otp_codes`,
 }
 
-// statsRun builds the shared param set (date range + tag), GETs the given path,
+// statsRun builds the shared param set (date range + tag + stream), GETs the given path,
 // and prints the aggregate object.
 func statsRun(path string) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
@@ -50,6 +56,7 @@ func statsRun(path string) func(cmd *cobra.Command, args []string) error {
 			return err
 		}
 		setIfNonEmpty(params, "tag", statsTag)
+		setIfNonEmpty(params, "messagestream", statsStream)
 
 		data, err := serverGet(c, path, params)
 		if err != nil {

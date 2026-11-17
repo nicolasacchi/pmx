@@ -90,3 +90,29 @@ func TestE2EStatsTagFilter(t *testing.T) {
 		t.Errorf("query missing tag: %s", cr.RawQuery)
 	}
 }
+
+func TestE2EStatsStreamFilter(t *testing.T) {
+	cr, err := runCmd(t, 200, `{"Sent":5}`, "stats", "outbound", "--stream", "otp_codes", "--tag", "otp")
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+	if cr.Path != "/stats/outbound" {
+		t.Errorf("path = %s", cr.Path)
+	}
+	if !strings.Contains(cr.RawQuery, "messagestream=otp_codes") {
+		t.Errorf("query missing messagestream: %s", cr.RawQuery)
+	}
+	if !strings.Contains(cr.RawQuery, "tag=otp") {
+		t.Errorf("query missing tag: %s", cr.RawQuery)
+	}
+}
+
+func TestE2EStatsStreamOmittedWhenEmpty(t *testing.T) {
+	cr, err := runCmd(t, 200, `{"Sent":5}`, "stats", "sends")
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+	if strings.Contains(cr.RawQuery, "messagestream") {
+		t.Errorf("messagestream must be omitted when --stream is empty: %s", cr.RawQuery)
+	}
+}
